@@ -6,14 +6,16 @@ MySqlPool::MySqlPool(const std::string& url, const std::string& user, const std:
     try {
         for (int i = 0; i < poolSize_; ++i) {
             sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
-            std::unique_ptr<sql::Connection> con(driver->connect(url_, user_, pass_));
+            //std::unique_ptr<sql::Connection> con(driver->connect(url_, user_, pass_));
+            //std::cerr << url_ << ":" << user_ << ":" << pass_ << std::endl;
+            auto *con(driver->connect(url, user_, pass_));
             con->setSchema(schema_);
             auto current_time = std::chrono::system_clock::now().time_since_epoch();
             long long time_stamp = std::chrono::duration_cast<std::chrono::seconds>(current_time).count();
-            pool_.push(std::make_unique<SqlConnection>(con.get(), time_stamp));
+            pool_.push(std::make_unique<SqlConnection>(con, time_stamp));
         }
         _check_thread = std::thread([this]() {
-            while (true) {
+            while (!b_stop_) {
                 checkConnection();
                 std::this_thread::sleep_for(std::chrono::seconds(60));
             }
@@ -22,7 +24,7 @@ MySqlPool::MySqlPool(const std::string& url, const std::string& user, const std:
     }
     catch (sql::SQLException& e) {
         // ¥¶¿Ì“Ï≥£
-        std::cout << "mysql pool init failed" << std::endl;
+        log4cpp::Category::getInstance("server").errorStream()<< "mysql connect error:"<<e.what();
     }
 }
 
@@ -67,11 +69,12 @@ void MySqlPool::checkConnection(){
     long long time_stamp = std::chrono::duration_cast<std::chrono::seconds>(current_time).count();
     for (int i = 0; i < pool_size; i++) {
         auto con = std::move(pool_.front());
-        pool_.push(std::move(con));
+        pool_.pop();
         Defer defer([this, &con]() {
             pool_.push(std::move(con));
             });
-        if (time_stamp - con->_last_oper_time < 5) {
+        
+        if (time_stamp - con->_last_oper_time < 500) {
             continue;
         }
         try {

@@ -4,7 +4,6 @@
 #include <map>
 class HttpConnection;
 typedef std::function<void(std::shared_ptr<HttpConnection>)> HttpHandler;
-#pragma once
 
 class LogicSystem :public Singleton<LogicSystem>
 {

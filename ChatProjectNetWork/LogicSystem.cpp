@@ -3,6 +3,7 @@
 #include "VerifyGrpcClient.h"
 #include "RedisMgr.h"
 #include "MySqlMgr.h"
+#include "Utility.h"
 LogicSystem::LogicSystem(){
 	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection) {
 		beast::ostream(connection->m_response.body())<<"receive get_test req\n";
@@ -51,7 +52,7 @@ LogicSystem::LogicSystem(){
 		});
 	RegPost("/user_register", [](std::shared_ptr<HttpConnection> connection) {
 		auto body_str = boost::beast::buffers_to_string(connection->m_request.body().data());
-		log4cpp::Category::getInstance("server").info("receive body is " + body_str);
+		log4cpp::Category::getInstance("server").info("receive body is " + jsonSimpleStr(body_str));
 		connection->m_response.set(http::field::content_type, "text/json");
 		Json::Value root;
 		Json::Reader reader;
@@ -87,7 +88,7 @@ LogicSystem::LogicSystem(){
 			return true;
 		}
 		if (verify_code != src_root["verifycode"].asString()) {
-			log4cpp::Category::getInstance("server").error(" verify code error");
+			log4cpp::Category::getInstance("server").error("verify code error");
 			root["error"] = ErrorCodes::verify_CODE_ERROR;
 			std::string jsonstr = root.toStyledString();
 			beast::ostream(connection->m_response.body()) << jsonstr;

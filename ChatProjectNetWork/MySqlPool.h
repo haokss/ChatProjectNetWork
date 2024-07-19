@@ -5,9 +5,7 @@
 class SqlConnection {
 public:
     SqlConnection(sql::Connection* con, int64_t last_time)
-        :_con(con), _last_oper_time(last_time) {
-    }
-public:
+        :_con(con), _last_oper_time(last_time) {}
     std::unique_ptr<sql::Connection> _con;
     int64_t _last_oper_time;
 };

@@ -34,19 +34,19 @@ bool RedisMgr::Get(const std::string& key, std::string& value){
     }
     this->_reply = (redisReply*)redisCommand(connect, "GET %s", key.c_str());
     if (this->_reply == NULL) {
-        std::cout << "[ GET  " << key << " ] failed, because null" << std::endl;
+        log4cpp::Category::getInstance("server").infoStream() << "[ GET  " << key << " ] failed, 获取reids验证码错误";
         freeReplyObject(this->_reply);
         return false;
     }
     if (this->_reply->type != REDIS_REPLY_STRING) {
-        std::cout << "reply type:" << this->_reply->type << std::endl;
-        std::cout << "[ GET  " << key << " ] failed, because not string" << std::endl;
+        log4cpp::Category::getInstance("server").infoStream() << "reply type:" << this->_reply->type 
+        << "[ GET  " << key << " ] failed, 用户提交验证码已过期";
         freeReplyObject(this->_reply);
         return false;
     }
     value = this->_reply->str;
     freeReplyObject(this->_reply);
-    std::cout << "Succeed to execute command [ GET " << key << "  ]" << std::endl;
+    log4cpp::Category::getInstance("server").infoStream()<<"Succeed to execute command [ GET " << key << "  ]";
     return true;
 }
 
@@ -84,7 +84,7 @@ bool RedisMgr::Auth(const std::string& password){
     }
     this->_reply = (redisReply*)redisCommand(connect, "AUTH %s", password.c_str());
     if (this->_reply->type == REDIS_REPLY_ERROR) {
-        std::cout << "认证失败" << std::endl;
+        log4cpp::Category::getInstance("server").error("数据库身份认证失败！");
         //执行成功 释放redisCommand执行后返回的redisReply所占用的内存
         freeReplyObject(this->_reply);
         return false;
@@ -92,7 +92,7 @@ bool RedisMgr::Auth(const std::string& password){
     else {
         //执行成功 释放redisCommand执行后返回的redisReply所占用的内存
         freeReplyObject(this->_reply);
-        std::cout << "认证成功" << std::endl;
+        log4cpp::Category::getInstance("server").info("认证成功！");
         return true;
     }
 }
