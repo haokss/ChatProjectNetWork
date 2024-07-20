@@ -57,6 +57,12 @@
     <ClCompile Include="MySqlMgr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="StatusConPool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StatusGrpcClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CServer.h">
@@ -105,6 +111,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MySqlMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusGrpcClient.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusConPool.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

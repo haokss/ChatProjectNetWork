@@ -161,6 +161,8 @@ xcopy "$(ProjectDir)*.dll"   "$(SolutionDir)$(Platform)\$(Configuration)\"   /y<
     <ClCompile Include="MySqlPool.cpp" />
     <ClCompile Include="RedisConPool.cpp" />
     <ClCompile Include="RedisMgr.cpp" />
+    <ClCompile Include="StatusConPool.cpp" />
+    <ClCompile Include="StatusGrpcClient.cpp" />
     <ClCompile Include="VerifyGrpcClient.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +171,8 @@ xcopy "$(ProjectDir)*.dll"   "$(SolutionDir)$(Platform)\$(Configuration)\"   /y<
     <ClInclude Include="CServer.h" />
     <ClInclude Include="const.h" />
     <ClInclude Include="MySqlMgr.h" />
+    <ClInclude Include="StatusConPool.h" />
+    <ClInclude Include="StatusGrpcClient.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="HttpConnection.h" />
     <ClInclude Include="LogicSystem.h" />

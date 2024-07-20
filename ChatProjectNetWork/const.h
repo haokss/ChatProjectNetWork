@@ -32,6 +32,7 @@
 #include <condition_variable>
 #include "hiredis.h"
 
+#define CODE_PREFIX "code_"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -41,13 +42,11 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 enum ErrorCodes {
 	SUCCESS = 0,
 	ERROR_JSON = 1001,
-	RPCFAILED = 1002,
-	USRE_EXIST = 1003,
-	verify_EXPRIRED = 1004,
-	verify_CODE_ERROR = 1005,
-	PASSWDERR = 1006,
-	EMAIL_NOT_MATCH = 1007,
-	PASSWD_UP_FAILED = 1008
+	ERROR_RPCFAILED = 1002,
+	ERROR_USRE_EXIST = 1003,
+	ERROR_VERIFY_EXPRIRED = 1004,
+	ERROR_VERIFY_CODE = 1005,
+	ERROR_PASSWD = 1006,
+	ERROR_EMAIL_NOT_MATCH = 1007,
+	ERROR_PASSWD_UP_FAILED = 1008
 };
-
-#define CODE_PREFIX "code_"
