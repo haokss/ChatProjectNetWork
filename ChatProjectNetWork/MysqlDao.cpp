@@ -1,7 +1,7 @@
 #include "MysqlDao.h"
 #include "const.h"
 #include "ConfigMgr.h"
-#include <sstream>
+#include "Utility.h"
 MysqlDao::MysqlDao(){
     auto& cfg = ConfigMgr::Inst();
     const auto& host = cfg["Mysql"]["Host"];
@@ -117,7 +117,41 @@ bool MysqlDao::updatePasswd(const std::string& name, const std::string& pwd){
     }
 }
 
-bool MysqlDao::checkPwd(const std::string& name, const std::string& pwd, UserInfo& user_info)
-{
-    
+bool MysqlDao::checkPwd(const std::string& email, const std::string& pwd, UserInfo& user_info){
+    auto con = pool_->getConnection();
+    Defer defer([this, &con]() {
+        pool_->returnConnection(std::move(con));
+        });
+    try {
+        if (con == nullptr) {
+            return false;
+        }
+        // 准备SQL语句
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->_con->prepareStatement("SELECT * FROM user WHERE email = ?"));
+        pstmt->setString(1, email); // 将username替换为你要查询的用户名
+        // 执行查询
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        std::string origin_pwd = "";
+        // 遍历结果集
+        while (res->next()) {
+            origin_pwd = res->getString("pwd");
+            // 输出查询到的密码
+            std::cout << "Password: " << origin_pwd << std::endl;
+            break;
+        }
+        if (pwd != origin_pwd) {
+            return false;
+        }
+        user_info.name = res->getString("name");
+        user_info.email = email;
+        user_info.uid = res->getInt("uid");
+        user_info.pwd = origin_pwd;
+        return true;
+    }
+    catch (sql::SQLException& e) {
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return false;
+    }
 }

@@ -4,6 +4,7 @@
 #include "RedisMgr.h"
 #include "MySqlMgr.h"
 #include "Utility.h"
+#include "StatusGrpcClient.h"
 LogicSystem::LogicSystem(){
 	RegGet("/get_test", [](std::shared_ptr<HttpConnection> connection) {
 		beast::ostream(connection->m_response.body())<<"receive get_test req\n";
@@ -199,11 +200,11 @@ LogicSystem::LogicSystem(){
 			beast::ostream(connection->m_request.body()) << jsonstr;
 			return true;
 		}
-		auto name = src_root["user"].asString();
+		auto email = src_root["email"].asString();
 		auto pwd = src_root["passwd"].asString();
 		UserInfo userInfo;
 		//查询数据库判断用户名和密码是否匹配
-		bool pwd_valid = MySqlMgr::GetInstance().checkPwd(name, pwd, userInfo);
+		bool pwd_valid = MySqlMgr::GetInstance().checkPwd(email, pwd, userInfo);
 		if (!pwd_valid) {
 			std::cout << " user pwd not match" << std::endl;
 			root["error"] = ErrorCodes::ERROR_PASSWD;
@@ -211,8 +212,9 @@ LogicSystem::LogicSystem(){
 			beast::ostream(connection->m_response.body()) << jsonstr;
 			return true;
 		}
+		std::cout << "密码匹配成功" << std::endl;
 		//查询StatusServer找到合适的连接
-		auto reply = StatusGrpcClient::GetInstance()->GetChatServer(userInfo.uid);
+		auto reply = StatusGrpcClient::GetInstance().GetChatServer(userInfo.uid);
 		if (reply.error()) {
 			std::cout << " grpc get chat server failed, error is " << reply.error() << std::endl;
 			root["error"] = ErrorCodes::ERROR_RPCFAILED;
@@ -222,10 +224,11 @@ LogicSystem::LogicSystem(){
 		}
 		std::cout << "succeed to load userinfo uid is " << userInfo.uid << std::endl;
 		root["error"] = 0;
-		root["user"] = name;
+		root["user"] = userInfo.name;
 		root["uid"] = userInfo.uid;
 		root["token"] = reply.token();
 		root["host"] = reply.host();
+		root["port"] = reply.port();
 		std::string jsonstr = root.toStyledString();
 		beast::ostream(connection->m_response.body()) << jsonstr;
 		return true;

@@ -2,6 +2,7 @@
 #include "Singleton.hpp"
 #include "const.h"
 #include <map>
+#include "data.h"
 class HttpConnection;
 typedef std::function<void(std::shared_ptr<HttpConnection>)> HttpHandler;
 

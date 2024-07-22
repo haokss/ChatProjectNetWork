@@ -22,7 +22,7 @@ bool MySqlMgr::updatePasswd(const std::string& name, const std::string& pwd){
     return m_dao.updatePasswd(name, pwd);
 }
 
-bool MySqlMgr::checkPwd(const std::string& name, const std::string& pwd, _RPC_ASYNC_STATE::UserInfo& user_info)
+bool MySqlMgr::checkPwd(const std::string& email, const std::string& pwd, UserInfo& user_info)
 {
-    return m_dao.checkPwd(name, pwd, user_info);
+    return m_dao.checkPwd(email, pwd, user_info);
 }

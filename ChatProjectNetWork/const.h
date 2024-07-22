@@ -31,7 +31,7 @@
 #include <mutex>
 #include <condition_variable>
 #include "hiredis.h"
-
+#include "data.h"
 #define CODE_PREFIX "code_"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
