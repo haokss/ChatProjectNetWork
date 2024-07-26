@@ -3,7 +3,7 @@
 #include "MysqlMgr.h"
 #include "const.h"
 #include "RedisMgr.h"
-
+#include "UserMgr.h"
 using namespace std;
 
 LogicSystem::LogicSystem():_b_stop(false){
@@ -85,75 +85,57 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short &msg_id
 		std::cerr << "JSON does not contain required fields 'uid' and 'token'" << std::endl;
 		return;
 	}
-	//auto uid = root["uid"].asInt();
-	int uid = 12;
-	auto token = root["token"].asString();
-	std::cout << "user login uid is  " << uid << " user token  is "
-		<< token << endl;
-	auto rsp = StatusGrpcClient::GetInstance().Login(uid, token);
 	Json::Value  rtvalue;
+	// 函数调用结束自动回包
 	Defer defer([this, &rtvalue, session]() {
 		std::string return_str = rtvalue.toStyledString();
 		session->Send(return_str, MSG_CHAT_LOGIN_RSP);
 		});
-
-	//从redis获取用户token是否正确
-	//std::string uid_str = std::to_string(uid);
-	//std::string token_key = USERTOKENPREFIX + uid_str;
-	//std::string token_value = "";
-	//bool success = RedisMgr::GetInstance().Get(token_key, token_value);
-	//if (!success) {
-	//	rtvalue["error"] = ErrorCodes::UidInvalid;
-	//	return ;
-	//}
-
-	//if (token_value != token) {
-	//	rtvalue["error"] = ErrorCodes::TokenInvalid;
-	//	return ;
-	//}
-
-	rtvalue["error"] = rsp.error();
-	if (rsp.error() != ErrorCodes::Success) {
-		return;
-	}
-
-	//std::string base_key = USER_BASE_INFO + uid_str;
-	//auto user_info = std::make_shared<UserInfo>();
-	//bool b_base = GetBaseInfo(base_key, uid, user_info);
-	//if (!b_base) {
-	//	rtvalue["error"] = ErrorCodes::UidInvalid;
+	auto uid = root["uid"].asInt();
+	auto token = root["token"].asString();
+	std::cout << "user login uid is  " << uid << " user token  is "
+		<< token << endl;
+	// 不去status服务器中查询token，直接在redis中查找status服务器设置的token
+	//auto rsp = StatusGrpcClient::GetInstance().Login(uid, token);
+	//rtvalue["error"] = rsp.error();
+	//auto value = rtvalue["error"];
+	//if (rsp.error() != ErrorCodes::Success) {
+	//	std::string return_str = rtvalue.toStyledString();
+	//	session->Send(return_str, MSG_CHAT_LOGIN_RSP);
 	//	return;
 	//}
+	std::string token_key = USERTOKENPREFIX + std::to_string(uid);
+	std::string token_val = "";
+	bool success = RedisMgr::GetInstance().Get(token_key, token_val);
+	if (!success) {
+		rtvalue["error"] = ErrorCodes::UidInvalid;
+		return;
+	}
+	if (token_val != token) {
+		rtvalue["error"] = ErrorCodes::TokenInvalid;
+		return;
+	}
+	rtvalue["error"] = ErrorCodes::Success;
 	std::shared_ptr<UserInfo> user_info = nullptr;	
 	user_info = MysqlMgr::GetInstance().GetUser(uid);
 	rtvalue["uid"] = uid;
-	//rtvalue["pwd"] = user_info->pwd;
 	rtvalue["name"] = user_info->name;
 	rtvalue["email"] = user_info->email;
-	//rtvalue["nick"] = user_info->nick;
-	//rtvalue["desc"] = user_info->desc;
-	//rtvalue["sex"] = user_info->sex;
-	//rtvalue["icon"] = user_info->icon;
 
-	auto server_name = ConfigMgr::Inst().GetValue("SelfServer", "Name");
-	//将登录数量增加
+	// 将服务器上线人数增加
+	std::string server_name = ConfigMgr::Inst().GetValue("SelfServer", "Name");
 	auto rd_res = RedisMgr::GetInstance().HGet(LOGIN_COUNT, server_name);
-	int count = 0;
+	int login_count = 0;
 	if (!rd_res.empty()) {
-		count = std::stoi(rd_res);
+		login_count = std::stoi(rd_res);
 	}
-
-	count++;
-	auto count_str = std::to_string(count);
-	RedisMgr::GetInstance().HSet(LOGIN_COUNT, server_name, count_str);
-	//session绑定用户uid
+	++login_count;
+	RedisMgr::GetInstance().HSet(LOGIN_COUNT, server_name, std::to_string(login_count));
+	// 为session绑定id,方便后期管理
 	session->SetUserId(uid);
-	//为用户设置登录ip server的名字
-	//std::string  ipkey = USERIPPREFIX + uid_str;
-	//RedisMgr::GetInstance().Set(ipkey, server_name);
-	//uid和session绑定管理,方便以后踢人操作
-	//UserMgr::GetInstance().SetUserSession(uid, session);
-
+	std::string ip_key = USERIPPREFIX + std::to_string(uid);
+	RedisMgr::GetInstance().Set(ip_key, server_name);
+	UserMgr::GetInstance().setUserSession(uid, session);
 	return;
 }
 

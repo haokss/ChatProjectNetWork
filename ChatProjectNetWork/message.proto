@@ -1,5 +1,6 @@
 syntax = "proto3";
 package message;
+// 为外部提供服务
 service VarifyService {
   rpc GetVarifyCode (GetVarifyReq) returns (GetVarifyRsp) {}
 }

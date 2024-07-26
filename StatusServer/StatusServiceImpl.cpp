@@ -5,24 +5,25 @@
 #include "Utility.h"
 #include <climits>
 
-StatusServiceImpl::StatusServiceImpl() :_server_index(0)
+StatusServiceImpl::StatusServiceImpl()
 {
 	auto& cfg = ConfigMgr::Inst();
 	ChatServer server;
 	server.port = cfg["ChatServer1"]["Port"];
 	server.host = cfg["ChatServer1"]["Host"];
+	server.name = cfg["ChatServer1"]["Name"];
 	server.con_count = 0;
 	_servers[server.name] = server;
 	server.port = cfg["ChatServer2"]["Port"];
 	server.host = cfg["ChatServer2"]["Host"];
+	server.name = cfg["ChatServer2"]["Name"];
 	_servers[server.name] = server;
 }
 
 
 Status StatusServiceImpl::GetChatServer(ServerContext* context, const GetChatServerReq* request, GetChatServerRsp* reply)
 {
-    std::string prefix("haoks status server has received :  ");
-    _server_index = (_server_index++) % _servers.size();
+    std::string prefix("haoks status server has received : ");
     //auto& server = _servers[_server_index];
 	const auto& server = getChatServer();
     reply->set_host(server.host);
@@ -67,12 +68,35 @@ Status StatusServiceImpl::GetChatServer(ServerContext* context, const GetChatSer
 ChatServer StatusServiceImpl::getChatServer() {
 	std::lock_guard<std::mutex> guard(_server_mtx);
 	auto minServer = _servers.begin()->second;
+	auto count_str = RedisMgr::GetInstance().HGet(LOGIN_COUNT, minServer.name);
+	if (count_str.empty()) {
+		//不存在则默认设置为最大
+		minServer.con_count = INT_MAX;
+	}
+	else {
+		minServer.con_count = std::stoi(count_str);
+	}
 	// 使用范围基于for循环
-	for ( auto& server : _servers) {
+	for (auto& server : _servers) {
+
+		if (server.second.name == minServer.name) {
+			continue;
+		}
+
+		auto count_str = RedisMgr::GetInstance().HGet(LOGIN_COUNT, server.second.name);
+		if (count_str.empty()) {
+			server.second.con_count = INT_MAX;
+			std::cout << server.first << " is not exist" << std::endl;
+		}
+		else {
+			server.second.con_count = std::stoi(count_str);
+		}
+
 		if (server.second.con_count < minServer.con_count) {
 			minServer = server.second;
 		}
 	}
+
 	return minServer;
 }
 
@@ -85,7 +109,7 @@ Status StatusServiceImpl::Login(ServerContext* context, const LoginReq* request,
 	std::string token_key = USERTOKENPREFIX + uid_str;
 	std::string token_value = "";
 	bool success = RedisMgr::GetInstance().Get(token_key, token_value);
-	if (success) {
+	if (!success) {
 		reply->set_error(ErrorCodes::ERROR_UID_INVALID);
 		return Status::OK;
 	}

@@ -1,7 +1,7 @@
 #include "RedisMgr.h"
 #include "const.h"
 #include "ConfigMgr.h"
-
+#include "Utility.hpp"
 RedisMgr::RedisMgr() {
 	auto& gCfgMgr = ConfigMgr::Inst();
 	auto host = gCfgMgr["Redis"]["Host"];
@@ -13,8 +13,6 @@ RedisMgr::RedisMgr() {
 RedisMgr::~RedisMgr() {
 	
 }
-
-
 
 bool RedisMgr::Get(const std::string& key, std::string& value)
 {
@@ -318,5 +316,3 @@ bool RedisMgr::ExistsKey(const std::string &key)
 	_con_pool->returnConnection(connect);
 	return true;
 }
-
-

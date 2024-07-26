@@ -1,5 +1,5 @@
 #include "StatusGrpcClient.h"
-//#include "Utility.h"
+#include "Utility.hpp"
 #include "const.h"
 StatusGrpcClient::StatusGrpcClient() {
     auto& gCfgMgr = ConfigMgr::Inst();

@@ -45,21 +45,6 @@ enum ErrorCodes {
 };
 
 
-// Defer类
-class Defer {
-public:
-	// 接受一个lambda表达式或者函数指针
-	Defer(std::function<void()> func) : func_(func) {}
-
-	// 析构函数中执行传入的函数
-	~Defer() {
-		func_();
-	}
-
-private:
-	std::function<void()> func_;
-};
-
 #define MAX_LENGTH  1024*2
 //头部总长度
 #define HEAD_TOTAL_LEN 4

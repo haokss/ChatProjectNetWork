@@ -3,6 +3,7 @@
 #include <thread>
 //#include "UserInfo.h"
 #include "data.h"
+#include "Utility.hpp"
 class SqlConnection {
 public:
 	SqlConnection(sql::Connection* con, int64_t lasttime):_con(con), _last_oper_time(lasttime){}

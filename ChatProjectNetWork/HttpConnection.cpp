@@ -29,7 +29,6 @@ void HttpConnection::Start(){
 			boost::ignore_unused(byte_trans);
 			self->HandleReq();
 			self->CheckDeadLine();
-
 		}
 		catch (std::exception& e) {
 			log4cpp::Category::getInstance("server").error(e.what());
@@ -64,7 +63,7 @@ void HttpConnection::WriteResponse()
 		});
 }
 
-inline void HttpConnection::HandleReq()
+void HttpConnection::HandleReq()
 {
 	m_response.version(m_request.version());
 	m_response.keep_alive(false);
@@ -78,7 +77,7 @@ inline void HttpConnection::HandleReq()
 			WriteResponse();
 			return;
 		}
-		m_response.result(http::status::not_found);
+		m_response.result(http::status::ok);
 		m_response.set(http::field::server, "GateServer");// 设置回应类型
 		WriteResponse();
 		return;

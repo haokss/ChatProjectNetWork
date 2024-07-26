@@ -50,6 +50,5 @@ private:
 	std::mutex _server_mtx;
 	std::mutex _token_mtx;
 	//std::vector<ChatServer> _servers;
-	int _server_index;
 };
 
