@@ -127,8 +127,8 @@
       <AdditionalLibraryDirectories>D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\re2\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\types\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\synchronization\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\status\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\random\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\flags\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\debugging\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\container\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\hash\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\boringssl-with-bazel\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\numeric\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\time\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\base\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\abseil-cpp\absl\strings\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\protobuf\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\zlib\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\Debug;D:\c++_lib\grpc-1.34.0\grpc\visualpro\third_party\cares\cares\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)config.ini"  "$(SolutionDir)$(Platform)\$(Configuration)\"   /y
-xcopy "$(ProjectDir)*.dll"   "$(SolutionDir)$(Platform)\$(Configuration)\"   /y</Command>
+      <Command>xcopy "$(ProjectDir)config\config.ini"  "$(SolutionDir)$(Platform)\$(Configuration)\"   /y
+xcopy "$(ProjectDir)dll\*.dll"   "$(SolutionDir)$(Platform)\$(Configuration)\"   /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,47 +148,47 @@ xcopy "$(ProjectDir)*.dll"   "$(SolutionDir)$(Platform)\$(Configuration)\"   /y<
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AsioIOServicePool.cpp" />
-    <ClCompile Include="ChatProjectNetWork.cpp" />
-    <ClCompile Include="ConfigMgr.cpp" />
-    <ClCompile Include="CServer.cpp" />
-    <ClCompile Include="HttpConnection.cpp" />
-    <ClCompile Include="LogicSystem.cpp" />
-    <ClCompile Include="message.grpc.pb.cc" />
-    <ClCompile Include="message.pb.cc" />
-    <ClCompile Include="MysqlDao.cpp" />
-    <ClCompile Include="MySqlMgr.cpp" />
-    <ClCompile Include="MySqlPool.cpp" />
-    <ClCompile Include="RedisConPool.cpp" />
-    <ClCompile Include="RedisMgr.cpp" />
-    <ClCompile Include="StatusConPool.cpp" />
-    <ClCompile Include="StatusGrpcClient.cpp" />
-    <ClCompile Include="VerifyGrpcClient.cpp" />
+    <ClCompile Include="code\ChatProjectNetWork.cpp" />
+    <ClCompile Include="code\ChatServer\AsioIOServicePool.cpp" />
+    <ClCompile Include="code\ChatServer\CServer.cpp" />
+    <ClCompile Include="code\ChatServer\HttpConnection.cpp" />
+    <ClCompile Include="code\ChatServer\LogicSystem.cpp" />
+    <ClCompile Include="code\grpc\StatusConPool.cpp" />
+    <ClCompile Include="code\ConfigManager\ConfigMgr.cpp" />
+    <ClCompile Include="code\grpc\message.grpc.pb.cc" />
+    <ClCompile Include="code\grpc\message.pb.cc" />
+    <ClCompile Include="code\grpc\StatusGrpcClient.cpp" />
+    <ClCompile Include="code\grpc\VerifyGrpcClient.cpp" />
+    <ClCompile Include="code\MySqlConnect\MysqlDao.cpp" />
+    <ClCompile Include="code\MySqlConnect\MySqlMgr.cpp" />
+    <ClCompile Include="code\MySqlConnect\MySqlPool.cpp" />
+    <ClCompile Include="code\RedisManager\RedisConPool.cpp" />
+    <ClCompile Include="code\RedisManager\RedisMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AsioIOServicePool.h" />
-    <ClInclude Include="ConfigMgr.h" />
-    <ClInclude Include="CServer.h" />
-    <ClInclude Include="const.h" />
-    <ClInclude Include="data.h" />
-    <ClInclude Include="MySqlMgr.h" />
-    <ClInclude Include="StatusConPool.h" />
-    <ClInclude Include="StatusGrpcClient.h" />
-    <ClInclude Include="Utility.h" />
-    <ClInclude Include="HttpConnection.h" />
-    <ClInclude Include="LogicSystem.h" />
-    <ClInclude Include="message.grpc.pb.h" />
-    <ClInclude Include="message.pb.h" />
-    <ClInclude Include="MysqlDao.h" />
-    <ClInclude Include="MySqlPool.h" />
-    <ClInclude Include="RedisConPool.h" />
-    <ClInclude Include="RedisMgr.h" />
-    <ClInclude Include="Singleton.hpp" />
-    <ClInclude Include="VerifyGrpcClient.h" />
+    <ClInclude Include="code\ChatServer\AsioIOServicePool.h" />
+    <ClInclude Include="code\ChatServer\CServer.h" />
+    <ClInclude Include="code\ChatServer\HttpConnection.h" />
+    <ClInclude Include="code\ChatServer\LogicSystem.h" />
+    <ClInclude Include="code\grpc\StatusConPool.h" />
+    <ClInclude Include="code\ConfigManager\ConfigMgr.h" />
+    <ClInclude Include="code\const.h" />
+    <ClInclude Include="code\data.h" />
+    <ClInclude Include="code\grpc\message.grpc.pb.h" />
+    <ClInclude Include="code\grpc\message.pb.h" />
+    <ClInclude Include="code\grpc\StatusGrpcClient.h" />
+    <ClInclude Include="code\grpc\VerifyGrpcClient.h" />
+    <ClInclude Include="code\MySqlConnect\MysqlDao.h" />
+    <ClInclude Include="code\MySqlConnect\MySqlMgr.h" />
+    <ClInclude Include="code\MySqlConnect\MySqlPool.h" />
+    <ClInclude Include="code\RedisManager\RedisConPool.h" />
+    <ClInclude Include="code\RedisManager\RedisMgr.h" />
+    <ClInclude Include="code\Util\Singleton.hpp" />
+    <ClInclude Include="code\Util\Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="log4cpp.properties" />
-    <None Include="message.proto" />
+    <None Include="code\grpc\message.proto" />
+    <None Include="PropertySheet.props" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
